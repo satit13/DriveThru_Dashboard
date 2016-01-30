@@ -1,0 +1,137 @@
+body{background: #43c1fb;}
+#container{
+	background: #43c1fb;
+	
+	width: 100%;
+	margin: auto;
+	padding: 5%;
+	padding-top: 5px;
+	padding-bottom: 1px;
+	margin-bottom: 0;	
+	font-family: "Tahoma", Times, serif;
+}
+#top{
+	background: #59dcde;
+	height:auto;
+	padding: 2%;
+	padding-top: 0;
+	margin: auto;
+	padding-left: 2%;
+	border-radius: 9px;
+	padding-bottom: 0;
+	margin-bottom: 3%;
+	margin-top: 2%;
+}
+	#top a{
+	color: black;
+	text-decoration: none;
+	}
+		#top a:hover{
+	color: black;
+	text-decoration: none;
+		}
+.menu{
+	width: 200px;
+	height:200px;
+	background: #c1ebec;
+	padding: 5%;
+	margin-left:14%;
+	margin-top: 2%;
+	border-radius: 9px;
+	text-align: center;
+}
+.menu2{
+	width: 98%;
+	background: #21c221;/*green*/
+	padding: 5%;
+	margin-top: 0;
+	margin-bottom: 1%;
+}
+.menuC{
+	width: 98%;
+	background: red;/*red*/
+	padding: 5%;
+	margin-top: 0;
+	margin-bottom: 3%;
+}
+.menuNotsuscess{
+	width: 98%;
+	background: #efbf1a;/*orange*/
+	padding: 5%;
+	margin-top: 0;
+	margin-bottom: 5%;
+}
+
+.clear{
+	clear: both;
+}
+
+#demo{
+	display: none;
+}
+
+#p2{
+	width: 80%;
+	background: #d3fefc;
+	margin: auto;
+	border-radius: 9px;
+	padding: 2%;
+}
+#TReport{
+	width: 70%;
+	background: #fff;
+	font-family: "Tahoma", Times, serif;
+	font-size: 12px;
+	margin: auto;
+}
+	#TReport table{
+	width: 100%;
+	background: #fff;
+	}
+		
+		#TReport th{
+		text-align: center;
+		color: #fff;
+		padding: 1%;
+		padding-top: 0;
+		padding-bottom: 0;
+		background: gray;
+		border: 2px black solid;
+		}
+		#TReport td{
+		padding: 1%;
+		padding-top: 0;
+		padding-bottom: 0;
+		padding-right: 2px;
+		border: 2px black solid;
+		}
+a.home{
+	display: block;
+	width: 60px;
+	height: 60px;
+	text-indent: -9999px;
+	position: fixed;
+	z-index: 999;
+	right: 20px;
+	bottom: 20px;
+	/*background: #27AE61 url("") no-repeat center 43%;*/
+	background:url(../../images/home.png) #fff no-repeat center 43%;
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+	border-radius: 30px;
+}
+a.back{
+	display: block;
+	width: 60px;
+	height: 60px;
+	text-indent: -9999px;
+	position: fixed;
+	z-index: 999;
+	right: 20px;
+	bottom: 20px;
+	/*background: #27AE61 url("") no-repeat center 43%;*/
+	background:url(../../images/back.png) #fff no-repeat center 43%;
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+	border-radius: 30px;
+}
