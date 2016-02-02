@@ -77,12 +77,6 @@ if(isset($_GET['day'])){echo'เลือกวันที่สิ้นสุ
 }else{
 echo'เลือกวันที่สิ้นสุด :<input type="date" min='.$begin_date.' form-control id="end_date" value='.$day.' onchange="return select_date(this)" />';
 	}
-
-//echo date('Y-m-t',strtotime($y.'-'.$m.'-21'));
-//echo date("Y-m-d",strtotime( "$day -7 day"));
-//$date_7=date("Y-m-d",strtotime("$day -7 day"));
-//echo $date_7;
-//echo $day;
 	
 	
 $data_w = array (
@@ -282,38 +276,27 @@ $sub_y .= substr($subs_y[1],0,-1);
 $out=json_decode($sub_y,true);
 //echo $sub_y;
 $cnt=count($out);
-for($i=0;$i<$cnt;$i++){
-	
-	
-switch($out[$i]["docMonth"]){
-	case '1':$b_y+=$out[$i]["billAmount"]; $bill_y[0]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[0]=$c_y; break;
-	case '2':$b_y += $out[$i]["billAmount"]; $bill_y[1]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[1]=$c_y;  break;
-	case '3':$b_y += $out[$i]["billAmount"]; $bill_y[2]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[2]=$c_y; break;	
-	case '4':$b_y += $out[$i]["billAmount"]; $bill_y[3]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[3]=$c_y;  break;
-	case '5':$b_y += $out[$i]["billAmount"]; $bill_y[4]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[4]=$c_y;  break;
-	case '6':$b_y += $out[$i]["billAmount"]; $bill_y[5]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[5]=$c_y;  break;
-	case '7':$b_y += $out[$i]["billAmount"]; $bill_y[6]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[6]=$c_y;  break;
-	case '8':$b_y += $out[$i]["billAmount"]; $bill_y[7]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[7]=$c_y;  break;
-	case '9':$b_y += $out[$i]["billAmount"]; $bill_y[8]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[8]=$c_y;  break;
-	case '10':$b_y+= $out[$i]["billAmount"]; $bill_y[9]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[9]=$c_y;  break;
-	case '11':$b_y+= $out[$i]["billAmount"]; $bill_y[10]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[10]=$c_y;  break;
-	case '12':$b_y+= $out[$i]["billAmount"]; $bill_y[11]=$b_y; $c_y+=$out[$i]["checkoutAmount"]; $cir_y[11]=$c_y;  break;
-	
-	}	
-	
-//echo $out[$i]["isUsedQty"]."<br>"; 
+$result_y = array();
+
+foreach ($out as $row_y)
+{
+  $result_y[$row_y['docMonth']]['docMonth'] = $row_y['docMonth'];
+ @ $result_y[$row_y['docMonth']]['checkoutAmount'] += $row_y['checkoutAmount'];
+ @ $result_y[$row_y['docMonth']]['billAmount'] += $row_y['billAmount'];
+ // $result[$row['producterCode']]['earn'] += $row['earn'];
 }
+$result_y = array_values($result_y);
+//var_dump($result_y);
+
 $sum_y=0;
 for($j=0;$j<12;$j++){
-	if(empty($bill_y[$j])){$bill_y[$j]=0;}
-	if(empty($cir_y[$j])){$cir_y[$j]=0;}
-	$all_y.='{"category": "เดือนที่  '.($j+1).'","ยอดขาย":'.$cir_y[$j].',"ยอดขายที่ทำบิล":'.$bill_y[$j].'},';
-	//$all_m.='{"category": "วันที่  '.$date[2].'","ยอดขายที่ทำบิล":'.$out_m[$i_m]["billAmount"].',"ยอดขาย":'.$out_m[$i_m]["checkoutAmount"].'},';
-	$sum_y+=$bill_y[$j];
+	if(empty($result_y[$j]['checkoutAmount'])){$result_y[$j]['checkoutAmount']=0;}
+	if(empty($result_y[$j]['billAmount'])){$result_y[$j]['billAmount']=0;}
+	$all_y.="{'category':'เดือนที่ ".($j+1)."','ยอดขาย': ".$result_y[$j]['checkoutAmount'].",'ยอดขายที่ทำบิล':".$result_y[$j]['billAmount']."},";
+	$sum_y+=$result_y[$j]['billAmount'];
 	
 	}
 	//echo $all_y;
-//{"category": "เดือนที่  '+(j+1)+'","ยอดขาย":'+ use[j]+',"จำนวนรถที่ไม่ได้ซื้อสินค้า": '+cancel[j]+'},
 require("graph/circulate_graph_y.php");
 
 
@@ -324,9 +307,6 @@ echo "<br><p class='right'>ยอดขายประจำปี $y เท่�
 echo"</div>";
 
 echo"</div>";
-
-//echo'<div class="select_g"><input type="radio" name="line1" value="1" onclick="return line1(this)" checked="checked"/> กราฟแท่ง <input type="radio" name="line1" value="2"  onclick="return line1(this)"/> กราฟเส้น</div><br>';
-
 
 ?>
 <div class="select_g">

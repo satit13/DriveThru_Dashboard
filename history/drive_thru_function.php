@@ -78,15 +78,7 @@ echo'เลือกวันที่เริ่มต้น :<input type="dat
 if(isset($_GET['day'])){echo'เลือกวันที่สิ้นสุด :<input type="date" min='.$begin_date.' form-control id="end_date" value='.$day.' onchange="return select_date(this)" />';
 }else{
 echo'เลือกวันที่สิ้นสุด :<input type="date" min='.$begin_date.' form-control id="end_date" value='.$day.' onchange="return select_date(this)" />';
-	}
-
-//echo date('Y-m-t',strtotime($y.'-'.$m.'-21'));
-//echo date("Y-m-d",strtotime( "$day -7 day"));
-
-//echo $date_7;
-//echo $day;
-	
-	
+	}	
 $data_w = array (
 	"beginDate" => "$begin_date",
 	"endDate" => "$day"
@@ -111,7 +103,6 @@ $use_w=array();$cancel_w=array();
 $u_w=0;$c_w=0;  
 // execute the request
 $json_w = curl_exec($ch_w);
-// output the profile information - includes the header
 //echo $json_w."<br>";
 //$sub = substr($output,9);
 if(!empty($json_w)){
@@ -206,21 +197,14 @@ $u_m=0;$c_m=0;
 // execute the request
 $json_m = curl_exec($ch_m);
 if(!empty($json_m)){
-// output the profile information - includes the header
-//echo $output."<br>";
-//$sub = substr($output,9);
+
 $sub_m = "[";
 $subs_m = explode("[",$json_m);
-//echo $json_m;
 $sub_m .= substr($subs_m[1],0,-1);
-//echo $sub_m;
-//echo $sub_y;
-//var_dump(json_decode($sub_m,true));
+
 $out_m=json_decode($sub_m,true);
 //echo $sub_y->{'docYear'};
 $cnt_m=count($out_m);
-//echo $cnt_m;
-//echo $y."-".$m."-01 00:00:00.0";
 $sum_m=array();
 $avg_m=0;
 $all_sum_m=0;
@@ -292,39 +276,29 @@ $out=json_decode($sub_y,true);
 $cnt=count($out);
 $sum_y=array();
 $all_sum_y=0;$avg_y=0;
-for($i=0;$i<$cnt;$i++){
-	
-	
-switch($out[$i]["docMonth"]){
-	case '1':$u_y += $out[$i]["isUsedQty"]; $c_y += $out[$i]["isCancelQty"]; $use_y[0]=$u_y; $cancel_y[0]=$c_y; break;
-	case '2':$u_y += $out[$i]["isUsedQty"]; $c_y += $out[$i]["isCancelQty"]; $use_y[1]=$u_y; $cancel_y[1]=$c_y; break;
-	case '3':$u_y += $out[$i]["isUsedQty"]; $c_y += $out[$i]["isCancelQty"]; $use_y[2]=$u_y; $cancel_y[2]=$c_y; break;	
-	case '4':$u_y += $out[$i]["isUsedQty"]; $c_y += $out[$i]["isCancelQty"]; $use_y[3]=$u_y; $cancel_y[3]=$c_y; break;
-	case '5':$u_y += $out[$i]["isUsedQty"]; $c_y += $out[$i]["isCancelQty"]; $use_y[4]=$u_y; $cancel_y[4]=$c_y; break;
-	case '6':$u_y += $out[$i]["isUsedQty"]; $c_y += $out[$i]["isCancelQty"]; $use_y[5]=$u_y; $cancel_y[5]=$c_y; break;
-	case '7':$u_y += $out[$i]["isUsedQty"]; $c_y += $out[$i]["isCancelQty"]; $use_y[6]=$u_y; $cancel_y[6]=$c_y; break;
-	case '8':$u_y += $out[$i]["isUsedQty"]; $c_y += $out[$i]["isCancelQty"]; $use_y[7]=$u_y; $cancel_y[7]=$c_y; break;
-	case '9':$u_y += $out[$i]["isUsedQty"]; $c_y += $out[$i]["isCancelQty"]; $use_y[8]=$u_y; $cancel_y[8]=$c_y; break;
-	case '10':$u_y+= $out[$i]["isUsedQty"]; $c_y+= $out[$i]["isCancelQty"]; $use_y[9]=$u_y; $cancel_y[9]=$c_y; break;
-	case '11':$u_y+= $out[$i]["isUsedQty"]; $c_y+= $out[$i]["isCancelQty"]; $use_y[10]=$u_y; $cancel_y[10]=$c_y; break;
-	case '12':$u_y+= $out[$i]["isUsedQty"]; $c_y+= $out[$i]["isCancelQty"]; $use_y[11]=$u_y; $cancel_y[11]=$c_y; break;
-	
-	}	
-	$sum_y[$i]=$u_y+$c_y;
-	$all_sum_y=$sum_y[$i];	
-//echo $out[$i]["isUsedQty"]."<br>"; 
-}
-$avg_y=$all_sum_y/12;
-for($j=0;$j<12;$j++){
 
-	if(empty($use_y[$j])){$use_y[$j]=0;}
-	if(empty($cancel_y[$j])){$cancel_y[$j]=0;}
-	$all_y.='{"category": "เดือนที่  '.($j+1).'","จำนวนรถที่ซื้อสินค้า":'.$use_y[$j].',"จำนวนรถที่ไม่ได้ซื้อสินค้า": '.$cancel_y[$j]."},";
-	
-	
+$result_y = array();
+
+foreach ($out as $row_y)
+{
+  $result_y[$row_y['docMonth']]['docMonth'] = $row_y['docMonth'];
+ @ $result_y[$row_y['docMonth']]['isUsedQty'] += $row_y['isUsedQty'];
+ @ $result_y[$row_y['docMonth']]['isCancelQty'] += $row_y['isCancelQty'];
+ // $result[$row['producterCode']]['earn'] += $row['earn'];
+}
+$result_y = array_values($result_y);
+//var_dump($result_y);
+
+$sum_y=0;
+for($j=0;$j<12;$j++){
+	if(empty($result_y[$j]['isUsedQty'])){$result_y[$j]['isUsedQty']=0;}
+	if(empty($result_y[$j]['isCancelQty'])){$result_y[$j]['isCancelQty']=0;}
+	$all_y.="{'category':'เดือนที่ ".($j+1)."','จำนวนรถที่ซื้อสินค้า': ".$result_y[$j]['isUsedQty'].",'จำนวนรถที่ไม่ได้ซื้อสินค้า':".$result_y[$j]['isCancelQty']."},";
+	$sum_y=($result_y[$j]['isCancelQty']+$result_y[$j]['isUsedQty']);
+	$all_sum_y+=$sum_y;
 	}
+
 	//echo $all_y;
-//{"category": "เดือนที่  '+(j+1)+'","จำนวนรถที่ซื้อสินค้า":'+ use[j]+',"จำนวนรถที่ไม่ได้ซื้อสินค้า": '+cancel[j]+'},
 require("graph/drivethru_graph_y.php");
 
 echo '<div id="chartdiv_y" class="graph"  style="display:block;"></div>
@@ -335,9 +309,6 @@ echo "<p class='right'>จำนวนรถที่เข้าใช้งา
 echo"</div>";
 
 echo"</div>";
-
-//echo'<div class="select_g"><input type="radio" name="line1" value="1" onclick="return line1(this)" checked="checked"/> กราฟแท่ง <input type="radio" name="line1" value="2"  onclick="return line1(this)"/> กราฟเส้น</div><br>';
-
 
 ?>
 <div class="select_g">

@@ -107,46 +107,24 @@ $sub_w_s = substr($sub_w,0,-1);
 $out_w=json_decode($sub_w_s,true);
 //echo $sub_y->{'docYear'};
 $cnt_w=count($out_w);
+if($cnt_w>0){
 $result = array();
-$product = array();
-$sum=0;$sum_p=0;$i=1;
+$all_product="";
 foreach ($out_w as $row)
 {
   $result[$row['pickerName']]['pickerName'] = $row['pickerName'];
  @$result[$row['pickerName']]['billAmount'] += $row['billAmount'];
- // $result[$row['pickerCode']]['earn'] += $row['earn'];
- $sum+=$row['billAmount'];
 }
 $result = array_values($result);
-echo "<table border='1'>";
-echo "<tr><th>รายการที่</th><th>หมายเลขคิว</th><th>เลขทะเบียนรถ</th><th>สินค้า</th><th>จำนวน</th><th>ราคา/หน่วย</th><th>ราคา</th><th>ยอดออกบิล</th>
-<th>ผู้ขาย</th></tr>";
-$per=0;$qty=0;
-foreach ($out_w as $pro)
-{
-  //$product[$pro['itemName']]['itemName'] = $pro['itemName'];
- //@$product[$pro['itemName']]['checkoutQty'] += $pro['checkoutQty'];
- // $result[$pro['pickerCode']]['earn'] += $pro['earn'];
- $sum_p+=$pro['checkoutQty'];
- if($pro['checkoutQty']==0){$qty=1;}
- else{$qty=$pro['checkoutQty'];}
- $per=($pro['checkoutAmount']/$qty);
- 
- 
- echo"<tr><td>$i</td><td>".$pro['qId']."</td><td>".$pro['carBrand']." ".$pro['carLicence']."</td><td>".$pro['itemName']."</td><td>".$pro['checkoutQty']." ".$pro['unitCode']."</td><td> ".number_format($per)." บาท </td><td> ".number_format($pro['checkoutAmount'])." บาท </td><td> ".number_format($pro['billAmount'])." บาท </td><td> ".$pro['pickerName']." </td></tr>";
-$i++;
-}
-//var_dump($product);
-//for($i=0;$i<10;$i++){
+$cnt_g=count($result);
+for($g=0;$g<$cnt_g;$g++){
+	if(empty($result[$g]['billAmount'])){$result[$g]['billAmount']=0;}
+	$all_product.="{'name':'".$result[$g]['pickerName']."','amount':".$result[$g]['billAmount']."},";
 	
-	//$all_product.="{'product': '".$sort['itemName'][$i]."','amount':".$sort['checkoutQty'][$i]."},";
-	//}
-//var_dump(json_encode($result));
+	}
+	//echo $all_product;
 
-$sum_amount =json_encode($result);
-//echo $sum_amount;
-echo "</table>";
-
+}
 ?>
 <script>
 			AmCharts.makeChart("pick_w",
@@ -155,8 +133,8 @@ echo "</table>";
 					"angle": 12,
 					"balloonText": "ยอดขายของ [[title]]<br><span style='font-size:14px'><b>[[value]] บาท</b> ([[percents]]%)</span>",
 					"depth3D": 15,
-					"titleField": "pickerName",
-					"valueField": "billAmount",
+					"titleField": "name",
+					"valueField": "amount",
 					"allLabels": [],
 					"balloon": {},
 					"legend": {
@@ -165,8 +143,9 @@ echo "</table>";
 						"markerType": "circle"
 					},
 					"titles": [],
-					"dataProvider": 
-						<?php echo $sum_amount?>
+					"dataProvider": [
+						<?php echo $all_product?>
+						]
 					
 				}
 			);
@@ -174,8 +153,64 @@ echo "</table>";
 <?php
 if($cnt_w==0){echo "<br><h1>ไม่มีข้อมูลของวันที่ $day</h1>";}
 else{
- echo '<div id="pick_w" class="graph"  style="display:block;"></div>';
-echo "<p class='right'>ยอดขายรวมของวันที่ $day เท่ากับ ".number_format($sum)." บาท</p>"; 
+echo '<div id="pick_w" class="graph"  style="display:block;"></div>';
+echo "<div id='table'>";
+echo '<br><table  width="100%">';
+echo "<tr>
+<th>หมายเลขคิว</th>
+<th>เลขทะเบียนรถ</th>
+<th>เลขที่บิล</th>
+<th>สินค้า</th>
+<th>จำนวน</th>
+<th>ผู้ขาย</th>
+<th>ราคา</th>
+</tr>";
+
+$result = array();
+$cnt=0;
+$sum=0;
+$sum_product=0;
+foreach ($out_w as $row) {
+  $table[$row['qId']]['qId'] = $row['qId'];
+  $table[$row['qId']]['carLicence'] = $row['carLicence'];
+  $table[$row['qId']]['carBrand'] = $row['carBrand'];
+  @$table[$row['qId']]['itemName'] .= " - &nbsp;".$row['itemName']."<br>";
+  @$table[$row['qId']]['checkoutQty'] .= $row['checkoutQty']." ".$row['unitCode']."<br>";
+  @$table[$row['qId']]['billAmount'] .= number_format($row['billAmount'],2)."<br>";
+  @$table[$row['qId']]['pickerName'] = $row['pickerName'];
+  @$table[$row['qId']]['sum'] += $row['billAmount'];
+  @$table[$row['qId']]['invoiceNo'] = $row['invoiceNo'];
+  $table[$row['qId']]['isCancel'] = $row['isCancel'];
+  
+
+}
+  $table = array_values($table);
+    $cnt=count($table);
+	//echo $cnt;
+	for($i=0;$i<$cnt;$i++){
+             if(empty($table[$i]['invoiceNo'])){$table[$i]['invoiceNo']="ไม่มีเลขที่บิล  ";}
+			 
+			 if( $table[$i]['isCancel']==1){ echo "<tr class='cancel'>";}
+			 else{ echo "<tr valign='top'>";}
+			 
+		echo"<td>".$table[$i]['qId']."</td>";
+		echo"<td>".$table[$i]['carBrand']." ".$table[$i]['carLicence']."</td>";
+		echo"<td align='right'>".$table[$i]['invoiceNo']."</td>";
+      	echo "<td>".$table[$i]['itemName']."</td>";
+		echo"<td>".$table[$i]['checkoutQty']."</td>";
+		echo"<td>".$table[$i]['pickerName']."</td>";
+		echo"<td align='right'>".$table[$i]['billAmount']."</td></tr>";  
+      
+   $sum_product+=$table[$i]['sum'];
+    }
+
+    //echo $all_prouct;
+    //echo $sum;
+	echo "<tr><th colspan='6'>รวม</th><th class='footer'>".number_format($sum_product,2)." บาท </th></tr>";
+echo "</table></div>";
+
+	
+echo "<p class='right'>ยอดขายรวมของวันที่ $day เท่ากับ ".number_format($sum_product)." บาท</p>"; 
 }
 ?>
 </div>
